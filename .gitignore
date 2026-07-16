@@ -1,0 +1,26 @@
+# Arquivos gerados pelo .NET
+**/bin/
+**/obj/
+.vs/
+*.user
+*.suo
+
+# Dependências e arquivos gerados pelo frontend
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Variáveis de ambiente
+.env
+.env.*
+!.env.example
+
+# Banco de dados SQLite
+*.db
+*.db-shm
+*.db-wal
+
+# Editores e sistema operacional
+.vscode/
+.DS_Store
+Thumbs.db
