@@ -26,6 +26,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString)
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -51,6 +65,8 @@ app.MapGet("/", () => Results.Ok(new
 {
     mensagem = "API de controle de gastos residenciais em execução."
 }));
+
+app.UseCors("Frontend");
 
 app.MapControllers();
 
