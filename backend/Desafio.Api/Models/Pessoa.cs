@@ -7,4 +7,6 @@ public sealed class Pessoa
     public string Nome { get; set; } = string.Empty;
 
     public int Idade { get; set; }
+
+    public List<Transacao> Transacoes { get; set; } = [];
 }
