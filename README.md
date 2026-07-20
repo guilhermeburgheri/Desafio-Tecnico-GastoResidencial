@@ -171,9 +171,9 @@ Acesse o endereço no navegador enquanto o backend e o frontend estiverem em exe
 ### Transação
 
 - Descrição obrigatória;
-- descrição entre 2 e 150 caracteres;
-- descrição não pode conter somente espaços;
-- valor deve ser maior que zero;
-- tipo deve ser `Despesa` ou `Receita`;
-- pessoa deve existir;
-- pessoa menor de 18 anos não pode cadastrar receita.
+- Descrição entre 2 e 150 caracteres;
+- Descrição não pode conter somente espaços;
+- Valor deve ser maior que zero;
+- Tipo deve ser `Despesa` ou `Receita`;
+- Pessoa deve existir;
+- Pessoa menor de 18 anos não pode cadastrar receita.

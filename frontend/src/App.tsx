@@ -472,7 +472,6 @@ function App() {
                       <strong>{pessoa.nome}</strong>
 
                       <span>
-                        ID {pessoa.id} ·{' '}
                         {pessoa.idade === 1
                           ? '1 ano'
                           : `${pessoa.idade} anos`}
@@ -634,7 +633,6 @@ function App() {
                       <strong>{transacao.descricao}</strong>
 
                       <span>
-                        ID {transacao.id} ·{' '}
                         {obterNomePessoa(transacao.pessoaId)}
                       </span>
                     </div>
@@ -766,10 +764,6 @@ function App() {
                               <strong>
                                 {totalPessoa.pessoaNome}
                               </strong>
-
-                              <span>
-                                ID {totalPessoa.pessoaId}
-                              </span>
                             </td>
 
                             <td className="valor-positivo">
