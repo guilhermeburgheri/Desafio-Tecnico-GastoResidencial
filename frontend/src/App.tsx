@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import {
+  consultarTotais,
   criarPessoa,
   criarTransacao,
   excluirPessoa,
@@ -10,12 +11,13 @@ import type {
   CriarPessoa,
   CriarTransacao,
   Pessoa,
+  ResumoTotais,
   TipoTransacao,
   Transacao,
 } from './types'
 import './App.css'
 
-type Secao = 'pessoas' | 'transacoes'
+type Secao = 'pessoas' | 'transacoes' | 'totais'
 
 const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -30,11 +32,25 @@ function obterMensagemErro(erro: unknown): string {
   return 'Ocorreu um erro inesperado.'
 }
 
+function obterClasseSaldo(saldo: number): string {
+  if (saldo > 0) {
+    return 'valor-positivo'
+  }
+
+  if (saldo < 0) {
+    return 'valor-negativo'
+  }
+
+  return 'valor-neutro'
+}
+
 function App() {
   const [secaoAtiva, setSecaoAtiva] = useState<Secao>('pessoas')
 
   const [pessoas, setPessoas] = useState<Pessoa[]>([])
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
+  const [resumoTotais, setResumoTotais] =
+    useState<ResumoTotais | null>(null)
 
   const [nome, setNome] = useState('')
   const [idade, setIdade] = useState('')
@@ -45,6 +61,7 @@ function App() {
   const [pessoaId, setPessoaId] = useState('')
 
   const [carregando, setCarregando] = useState(true)
+  const [carregandoTotais, setCarregandoTotais] = useState(false)
   const [salvandoPessoa, setSalvandoPessoa] = useState(false)
   const [salvandoTransacao, setSalvandoTransacao] = useState(false)
   const [excluindoId, setExcluindoId] = useState<number | null>(null)
@@ -85,10 +102,28 @@ function App() {
     void carregarDados()
   }, [])
 
+  async function carregarTotais() {
+    setMensagemErro('')
+    setCarregandoTotais(true)
+
+    try {
+      const totaisConsultados = await consultarTotais()
+      setResumoTotais(totaisConsultados)
+    } catch (erro) {
+      setMensagemErro(obterMensagemErro(erro))
+    } finally {
+      setCarregandoTotais(false)
+    }
+  }
+
   function trocarSecao(secao: Secao) {
     setSecaoAtiva(secao)
     setMensagemSucesso('')
     setMensagemErro('')
+
+    if (secao === 'totais') {
+      void carregarTotais()
+    }
   }
 
   async function cadastrarPessoa(event: FormEvent<HTMLFormElement>) {
@@ -131,10 +166,12 @@ function App() {
             primeiraPessoa.id - segundaPessoa.id,
         ),
       )
-      
+
       if (pessoas.length === 0) {
         setPessoaId(String(pessoaCriada.id))
       }
+
+      setResumoTotais(null)
 
       setNome('')
       setIdade('')
@@ -193,6 +230,9 @@ function App() {
           setTipo('Despesa')
         }
       }
+
+      // A exclusão altera os totais individuais e gerais.
+      setResumoTotais(null)
 
       setMensagemSucesso(
         `Pessoa "${pessoa.nome}" excluída com sucesso.`,
@@ -284,6 +324,9 @@ function App() {
         ),
       )
 
+      // A nova transação altera receitas, despesas e saldo.
+      setResumoTotais(null)
+
       setDescricao('')
       setValor('')
       setMensagemSucesso(
@@ -330,6 +373,16 @@ function App() {
           onClick={() => trocarSecao('transacoes')}
         >
           Transações
+        </button>
+
+        <button
+          className={`aba ${
+            secaoAtiva === 'totais' ? 'aba-ativa' : ''
+          }`}
+          type="button"
+          onClick={() => trocarSecao('totais')}
+        >
+          Totais
         </button>
       </nav>
 
@@ -404,7 +457,6 @@ function App() {
           <section className="cartao">
             <div className="lista-cabecalho">
               <h2>Pessoas cadastradas</h2>
-
               <span className="contador">{pessoas.length}</span>
             </div>
 
@@ -444,7 +496,7 @@ function App() {
             )}
           </section>
         </div>
-      ) : (
+      ) : secaoAtiva === 'transacoes' ? (
         <div className="conteudo">
           <section className="cartao">
             <h2>Cadastrar transação</h2>
@@ -564,7 +616,6 @@ function App() {
           <section className="cartao">
             <div className="lista-cabecalho">
               <h2>Transações cadastradas</h2>
-
               <span className="contador">{transacoes.length}</span>
             </div>
 
@@ -609,6 +660,149 @@ function App() {
             )}
           </section>
         </div>
+      ) : (
+        <section className="totais-secao">
+          <div className="totais-cabecalho">
+            <div>
+              <h2>Totais da residência</h2>
+              <p>
+                Receitas, despesas e saldo de cada pessoa.
+              </p>
+            </div>
+
+            <button
+              className="botao botao-secundario"
+              type="button"
+              onClick={() => void carregarTotais()}
+              disabled={carregandoTotais}
+            >
+              {carregandoTotais ? 'Atualizando...' : 'Atualizar'}
+            </button>
+          </div>
+
+          {carregandoTotais ? (
+            <section className="cartao">
+              <p className="estado-lista">
+                Calculando totais...
+              </p>
+            </section>
+          ) : resumoTotais === null ? (
+            <section className="cartao">
+              <p className="estado-lista">
+                Não foi possível carregar os totais.
+              </p>
+            </section>
+          ) : (
+            <>
+              <div className="resumo-geral">
+                <article className="cartao-total">
+                  <span className="rotulo-total">
+                    Receitas gerais
+                  </span>
+
+                  <strong className="valor-positivo">
+                    {formatadorMoeda.format(
+                      resumoTotais.totalReceitas,
+                    )}
+                  </strong>
+                </article>
+
+                <article className="cartao-total">
+                  <span className="rotulo-total">
+                    Despesas gerais
+                  </span>
+
+                  <strong className="valor-negativo">
+                    {formatadorMoeda.format(
+                      resumoTotais.totalDespesas,
+                    )}
+                  </strong>
+                </article>
+
+                <article className="cartao-total">
+                  <span className="rotulo-total">
+                    Saldo geral
+                  </span>
+
+                  <strong
+                    className={obterClasseSaldo(
+                      resumoTotais.saldo,
+                    )}
+                  >
+                    {formatadorMoeda.format(resumoTotais.saldo)}
+                  </strong>
+                </article>
+              </div>
+
+              <section className="cartao">
+                <div className="lista-cabecalho">
+                  <h2>Totais por pessoa</h2>
+
+                  <span className="contador">
+                    {resumoTotais.pessoas.length}
+                  </span>
+                </div>
+
+                {resumoTotais.pessoas.length === 0 ? (
+                  <p className="estado-lista">
+                    Nenhuma pessoa cadastrada.
+                  </p>
+                ) : (
+                  <div className="tabela-container">
+                    <table className="tabela-totais">
+                      <thead>
+                        <tr>
+                          <th>Pessoa</th>
+                          <th>Receitas</th>
+                          <th>Despesas</th>
+                          <th>Saldo</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {resumoTotais.pessoas.map((totalPessoa) => (
+                          <tr key={totalPessoa.pessoaId}>
+                            <td>
+                              <strong>
+                                {totalPessoa.pessoaNome}
+                              </strong>
+
+                              <span>
+                                ID {totalPessoa.pessoaId}
+                              </span>
+                            </td>
+
+                            <td className="valor-positivo">
+                              {formatadorMoeda.format(
+                                totalPessoa.totalReceitas,
+                              )}
+                            </td>
+
+                            <td className="valor-negativo">
+                              {formatadorMoeda.format(
+                                totalPessoa.totalDespesas,
+                              )}
+                            </td>
+
+                            <td
+                              className={obterClasseSaldo(
+                                totalPessoa.saldo,
+                              )}
+                            >
+                              {formatadorMoeda.format(
+                                totalPessoa.saldo,
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            </>
+          )}
+        </section>
       )}
     </main>
   )

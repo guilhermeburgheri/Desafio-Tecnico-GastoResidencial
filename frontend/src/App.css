@@ -180,6 +180,16 @@ select {
   background-color: #1d4ed8;
 }
 
+.botao-secundario {
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+}
+
+.botao-secundario:not(:disabled):hover {
+  background-color: #f1f5f9;
+}
+
 .botao-excluir {
   flex-shrink: 0;
   background-color: #fee2e2;
@@ -301,6 +311,117 @@ select {
   color: #991b1b;
 }
 
+.totais-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.totais-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.totais-cabecalho h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.4rem;
+}
+
+.totais-cabecalho p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.resumo-geral {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.cartao-total {
+  display: flex;
+  min-height: 120px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 6%);
+}
+
+.rotulo-total {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.cartao-total strong {
+  font-size: 1.45rem;
+}
+
+.valor-positivo {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.valor-negativo {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.valor-neutro {
+  color: #334155;
+  font-weight: 700;
+}
+
+.tabela-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabela-totais {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tabela-totais th,
+.tabela-totais td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.tabela-totais th {
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tabela-totais tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.tabela-totais td:first-child {
+  white-space: normal;
+}
+
+.tabela-totais td:first-child strong,
+.tabela-totais td:first-child span {
+  display: block;
+}
+
+.tabela-totais td:first-child span {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
 @media (max-width: 720px) {
   .app {
     width: calc(100% - 24px);
@@ -312,6 +433,10 @@ select {
   }
 
   .conteudo {
+    grid-template-columns: 1fr;
+  }
+
+  .resumo-geral {
     grid-template-columns: 1fr;
   }
 }
@@ -327,6 +452,8 @@ select {
 
   .aba {
     flex: 1;
+    padding-right: 8px;
+    padding-left: 8px;
   }
 
   .pessoa-item,
@@ -341,5 +468,18 @@ select {
 
   .transacao-resumo {
     align-items: flex-start;
+  }
+
+  .totais-cabecalho {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .totais-cabecalho .botao {
+    width: 100%;
+  }
+
+  .cartao-total {
+    min-height: 100px;
   }
 }
