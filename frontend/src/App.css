@@ -461,10 +461,8 @@
 }
 
 .cartao-total {
-  position: relative;
   display: flex;
   min-height: 138px;
-  overflow: hidden;
   flex-direction: column;
   justify-content: space-between;
   gap: 18px;
@@ -473,33 +471,6 @@
   border-radius: 15px;
   background-color: var(--cor-fundo-cartao);
   box-shadow: var(--sombra-cartao);
-}
-
-.cartao-total::after {
-  position: absolute;
-  right: -25px;
-  bottom: -45px;
-  width: 105px;
-  height: 105px;
-  border-radius: 50%;
-  background-color: rgb(148 163 184 / 8%);
-  content: "";
-}
-
-.rotulo-total {
-  position: relative;
-  z-index: 1;
-  color: var(--cor-texto-secundario);
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.015em;
-}
-
-.cartao-total strong {
-  position: relative;
-  z-index: 1;
-  font-size: clamp(1.35rem, 3vw, 1.65rem);
-  letter-spacing: -0.025em;
 }
 
 .valor-positivo {
